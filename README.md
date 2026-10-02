@@ -1,3 +1,8 @@
+## 🌐 Live Demo
+
+🚀 **Try DeadlineAI:**  
+https://deadlinetracker-ajibw7uwt2hsnt9cuqmdc4.streamlit.app/
+
 # DeadlineAI
 
 DeadlineAI turns academic documents into a source-grounded list of deadlines. Upload a syllabus, timetable, assignment sheet, exam schedule, college notice, or project schedule as a JPG, JPEG, PNG, or PDF. Gemini Vision extracts tasks and dates; students can review source evidence, ask follow-up questions, and email themselves a concise digest.
@@ -50,6 +55,7 @@ DeadlineAI turns academic documents into a source-grounded list of deadlines. Up
    ```
 
 Deadline extraction and chat need `GEMINI_API_KEY`. Email additionally needs `GMAIL_ADDRESS` and `GMAIL_APP_PASSWORD`. Gmail app passwords are created in Google Account security settings after two-step verification is enabled; do not use your regular Gmail password.
+
 
 ## Deploy on Streamlit Community Cloud
 
