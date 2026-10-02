@@ -179,23 +179,73 @@ def normalize_deadlines(data: dict[str, Any]) -> list[dict[str, str]]:
 
 def extract_deadlines(upload: Any, api_key: str) -> tuple[list[dict[str, str]], str]:
     """Ask Gemini to extract source-grounded deadlines from an image or PDF."""
+
     mime_type = detect_upload_mime_type(upload)
+
     if mime_type is None:
-        raise ValueError("Unsupported or unreadable file. Upload a valid JPG, JPEG, PNG, or PDF.")
+        raise ValueError(
+            "Unsupported or unreadable file. "
+            "Upload a valid JPG, JPEG, PNG, or PDF."
+        )
+
     client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=[
-            SYSTEM_PROMPT,
-            types.Part.from_bytes(data=upload.getvalue(), mime_type=mime_type),
-        ],
-        config=types.GenerateContentConfig(response_mime_type="application/json"),
-    )
+
+    max_attempts = 3
+
+    for attempt in range(max_attempts):
+        try:
+            response = client.models.generate_content(
+                model=MODEL_NAME,
+                contents=[
+                    SYSTEM_PROMPT,
+                    types.Part.from_bytes(
+                        data=upload.getvalue(),
+                        mime_type=mime_type,
+                    ),
+                ],
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json"
+                ),
+            )
+
+            # Gemini request succeeded
+            break
+
+        except Exception as error:
+            error_text = str(error)
+            error_code = getattr(error, "code", None)
+
+            # Detect temporary Gemini 503 / UNAVAILABLE errors
+            is_503_error = (
+                error_code == 503
+                or "503" in error_text
+                or "UNAVAILABLE" in error_text
+            )
+
+            # Retry temporary 503 errors
+            if is_503_error and attempt < max_attempts - 1:
+                wait_seconds = 2 ** attempt
+
+                time.sleep(wait_seconds)
+
+                continue
+
+            # If it is another error, or all retries failed,
+            # send the error to the existing error handler.
+            raise
+
     if not response.text:
-        raise ValueError("Gemini returned an empty response. Try a clearer document.")
+        raise ValueError(
+            "Gemini returned an empty response. "
+            "Try a clearer document."
+        )
+
     data = decode_json(response.text)
+
     deadlines = normalize_deadlines(data)
+
     note = str(data.get("document_note", "")).strip()
+
     return deadlines, note
 
 
