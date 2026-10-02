@@ -1,7 +1,7 @@
 """DeadlineAI: extract, review, and share academic deadlines."""
 
 from __future__ import annotations
-
+import time
 import hashlib
 from datetime import date
 from html import escape
