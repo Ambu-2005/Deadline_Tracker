@@ -320,9 +320,9 @@ def main() -> None:
                     st.session_state.chat_messages = []
                 except ValueError as error:
                     st.error(str(error))
-                except Exception:
-                    st.error("Gemini could not analyze this document right now. Check your API key and connection, then try again.")
-
+                except Exception as error:
+                    st.error(f"Gemini error: {error}")
+                    st.exception(error)
     deadlines = sorted(
         st.session_state.get("deadlines", []),
         key=lambda item: (item["date_status"] != "confirmed", item["due_date"] or "9999-12-31"),
