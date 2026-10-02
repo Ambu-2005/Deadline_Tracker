@@ -25,7 +25,7 @@ from prompts import (
 )
 
 
-MODEL_NAME = "gemini-2.5-flash-lite"
+MODEL_NAME = "gemini-3.5-flash-lite"
 SUPPORTED_TYPES = ["jpg", "jpeg", "png", "pdf"]
 MAX_DOCUMENT_BYTES = 20 * 1024 * 1024
 
